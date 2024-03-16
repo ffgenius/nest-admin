@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// 用户表
+model User {
+  id Int @id @default(autoincrement()) @db.UnsignedInt /// 用户id，自增
+  username String @unique @db.VarChar(50) /// 用户名
+  nickname String @db.VarChar(50) /// 用户昵称
+  password String @db.VarChar(255) /// 密码
+  enable Boolean @default(true) /// 是否禁用
+  avatar String? @db.VarChar(255) /// 头像
+  email String? @db.VarChar(255) /// 邮箱
+  phone String? @db.VarChar(255) /// 电话
+  createTime DateTime @default(now()) /// 创建时间
+  updateTime DateTime @updatedAt /// 更新时间
+}
+
+/// 角色表
+model Role {
+  id Int @id @default(autoincrement()) @db.UnsignedInt /// 角色id，自增
+  code String @unique @db.VarChar(50) /// 角色权限码
+  name String @unique @db.VarChar(255) /// 角色名称
+  enable Boolean @default(true) /// 角色是否禁用
+}
+
+/// 角色用户关联表
+model UserRolesRole {
+  id Int @id @default(autoincrement()) @db.UnsignedInt /// 主键id，自增
+  userId Int /// 用户id
+  roleId Int /// 角色id
+  @@index([roleId, userId], name: "user_roles_role_index")
+}
