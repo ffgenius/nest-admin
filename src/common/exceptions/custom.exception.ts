@@ -14,7 +14,7 @@ const getErrorCode = (errorType: ErrorType) => {
   return key ? +errorType.split('_')[1] : -1;
 };
 
-export class CustomError extends HttpException {
+export class CustomException extends HttpException {
   protected code: number;
 
   constructor(errorCode: ErrorType, message?: string, status?: HttpStatus) {

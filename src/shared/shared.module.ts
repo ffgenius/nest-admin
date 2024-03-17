@@ -3,16 +3,18 @@
  *
  */
 import { Global, Module } from '@nestjs/common';
-import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
+import { TransformInterceptor } from '@/common/interceptors/transform.interceptor';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { AllExceptionFilter } from '../common/filters/all-exception.filter';
+import { AllExceptionFilter } from '@/common/filters/all-exception.filter';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
+import { RedisService } from './redis.service';
 
 @Global()
 @Module({
   imports: [],
   providers: [
+    RedisService,
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
@@ -33,6 +35,6 @@ import Redis from 'ioredis';
       },
     },
   ],
-  exports: [],
+  exports: ['REDIS_CLIENT', RedisService],
 })
 export class SharedModule {}

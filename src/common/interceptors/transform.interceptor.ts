@@ -18,7 +18,6 @@ export class TransformInterceptor implements NestInterceptor {
   ): Observable<any> | Promise<Observable<any>> {
     return next.handle().pipe(
       map((data) => {
-        console.log(data);
         return {
           data,
           message: 'OK',
