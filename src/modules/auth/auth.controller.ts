@@ -9,7 +9,8 @@ export class AuthController {
 
   @Post('/login')
   async login(@Body() loginDto: LoginDto) {
-    return await this.authService.login(loginDto);
+    const res = await this.authService.login(loginDto);
+    return res.status ? { token: res.token } : { primitive: 1, msg: res.msg };
   }
 
   @UseGuards(JwtGuard)

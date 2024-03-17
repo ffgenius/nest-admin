@@ -26,14 +26,20 @@ export class AuthService {
         username: loginDto.username,
       },
     });
-    if (!res) return ErrorCode.ERR_10002;
-    if (res.password !== loginDto.password) return ErrorCode.ERR_10003;
+    let status = 0;
+    if (!res) return { status, msg: ErrorCode.ERR_10002 };
+    if (res.password !== loginDto.password)
+      return { status, msg: ErrorCode.ERR_10003 };
     const payload = {
       username: loginDto.username,
       password: loginDto.password,
-      userId: 123,
+      userId: res.id,
     };
-    return { token: this.generateToken(payload) };
+    status = 1;
+    return {
+      token: await this.generateToken(payload),
+      status,
+    };
   }
 
   // token 生成

@@ -18,11 +18,12 @@ export class TransformInterceptor implements NestInterceptor {
   ): Observable<any> | Promise<Observable<any>> {
     return next.handle().pipe(
       map((data) => {
-        return {
-          data,
-          message: 'OK',
-          code: 200,
-        };
+        if (data?.primitive) {
+          delete data.primitive;
+          return { ...data, code: 200 };
+        } else {
+          return { data, message: 'OK', code: 200 };
+        }
       }),
     );
   }
