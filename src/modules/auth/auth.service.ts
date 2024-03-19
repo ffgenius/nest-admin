@@ -6,6 +6,7 @@ import { ErrorCode } from '../../common/exceptions/custom.exception';
 import { JwtService } from '@nestjs/jwt';
 import { ACCESS_TOKEN_EXPIRATION_TIME, USER_ACCESS_TOKEN_KEY } from '@/config';
 import { RedisService } from '@/shared/redis.service';
+import { ERR_10004 } from "@/common/exceptions/error-code";
 
 @Injectable()
 export class AuthService {
@@ -20,16 +21,18 @@ export class AuthService {
   }
 
   // 登录
-  async login(loginDto: LoginDto) {
+  async login(code, loginDto: LoginDto) {
     const res = await this.prisma.user.findFirst({
       where: {
         username: loginDto.username,
       },
     });
     let status = 0;
-    if (!res) return { status, msg: ErrorCode.ERR_10002 };
+    if (code.toLocaleLowerCase() !== loginDto.captcha.toLocaleLowerCase())
+      return { status, message: ErrorCode.ERR_10004 };
+    if (!res) return { status, message: ErrorCode.ERR_10002 };
     if (res.password !== loginDto.password)
-      return { status, msg: ErrorCode.ERR_10003 };
+      return { status, message: ErrorCode.ERR_10003 };
     const payload = {
       username: loginDto.username,
       password: loginDto.password,
@@ -59,9 +62,5 @@ export class AuthService {
     return `${USER_ACCESS_TOKEN_KEY}:${payload.userId}${
       payload.captcha ? ':' + payload.captcha : ''
     }`;
-  }
-
-  async testToken() {
-    return this.redisService.get('user_access_token:123');
   }
 }
