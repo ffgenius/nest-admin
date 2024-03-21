@@ -6,7 +6,6 @@ import { ErrorCode } from '../../common/exceptions/custom.exception';
 import { JwtService } from '@nestjs/jwt';
 import { ACCESS_TOKEN_EXPIRATION_TIME, USER_ACCESS_TOKEN_KEY } from '@/config';
 import { RedisService } from '@/shared/redis.service';
-import { ERR_10004 } from "@/common/exceptions/error-code";
 
 @Injectable()
 export class AuthService {
@@ -62,5 +61,19 @@ export class AuthService {
     return `${USER_ACCESS_TOKEN_KEY}:${payload.userId}${
       payload.captcha ? ':' + payload.captcha : ''
     }`;
+  }
+
+  // 获取用户信息
+  async getUserInfo(req) {
+    const info = this.jwtService.decode(
+      req.headers.authorization.split(' ')[1],
+    );
+    const res = await this.prisma.user.findUnique({
+      where: {
+        id: info.userId,
+      },
+    });
+    delete res.password;
+    return res;
   }
 }

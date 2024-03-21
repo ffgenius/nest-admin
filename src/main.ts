@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
+import { generateDocument } from '@/config/doc';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +15,7 @@ async function bootstrap() {
       saveUninitialized: true,
     }),
   );
+  generateDocument(app);
   await app.listen(3000);
   console.log('🚀 启动成功: http://localhost:3000');
 }
